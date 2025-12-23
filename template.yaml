@@ -1,0 +1,117 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  wetter-bericht
+
+  Sample SAM Template for wetter-bericht
+
+#####################################
+# Parameters
+#####################################
+Parameters:
+  StackName:
+    Type: String
+    Default: wetter-bericht
+    Description: The stack name to group this deployment
+  DynamoTableName:
+    Type: String
+    Default: WetterBerichtSubs
+    Description: The name of the DynamoDB table
+
+#####################################
+# Globals
+#####################################
+Globals:
+  Function:
+    Runtime: python3.14
+    Timeout: 5
+    MemorySize: 128
+    Architectures:
+      - arm64
+    LoggingConfig:
+      LogFormat: JSON
+    Environment:
+      Variables:
+        STACK_NAME: !Ref StackName
+        DYNAMO_TABLE_NAME: !Ref DynamoTableName
+
+#####################################
+# Resources
+#####################################
+Resources:
+  # DynamoDB Table
+  WeatherSubscriptionsTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      TableName: !Ref DynamoTableName
+      BillingMode: PAY_PER_REQUEST
+      SSESpecification:
+        SSEEnabled: true
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+  # Lambda Function - Send Weather Forecast
+  SendForecastFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: send_forecast/
+      Handler: app.lambda_handler
+      Description: 'Send daily weather forecast to subscribed users'
+      Policies: 
+        - DynamoDBReadPolicy:
+            TableName: !Ref DynamoTableName
+        - SESCrudPolicy:
+            IdentityName: "*"
+  # Lambda Function - Manage Subscriptions
+  ManageSubscriptionsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: manage_subscriptions/
+      Handler: app.lambda_handler
+      Description: 'Handles ADD/REMOVE/LIST email commands'
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref DynamoTableName
+        - SESCrudPolicy:
+            IdentityName: "*"
+  # EventBridge Schedule
+  DailyForecastSchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub "${StackName}-daily-forecast"
+      Description: "Trigger daily weather forecast @ 4 AM EST"
+      ScheduleExpression: cron(0 9 * * ? *) # 9 AM UTC / 4 AM EST
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt SendForecastFunction.Arn
+          Id: SendDailyForecastTarget
+
+  # Permissions
+  PermissionForEventBridgeToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref SendForecastFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt DailyForecastSchedule.Arn
+
+#####################################
+# Outputs
+#####################################
+Outputs:
+  WeatherSubscriptionsTable:
+    Description: DynamoDB table for storing weather subscriptions
+    Value: !Ref DynamoTableName
+
+  SendForecastFunction:
+    Description: Send Forecast Lambda Function ARN
+    Value: !GetAtt SendForecastFunction.Arn
