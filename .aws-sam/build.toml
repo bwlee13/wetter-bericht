@@ -5,7 +5,7 @@ codeuri = "/Users/bwl/Documents/Dev/wetter-bericht/send_forecast"
 runtime = "python3.14"
 architecture = "arm64"
 handler = "app.lambda_handler"
-manifest_hash = "d41d8cd98f00b204e9800998ecf8427e"
+manifest_hash = "6686853da3491a56c98917cc5c4ddea2"
 packagetype = "Zip"
 functions = ["SendForecastFunction"]
 
