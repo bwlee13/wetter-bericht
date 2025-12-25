@@ -20,7 +20,7 @@ def lambda_handler(event, context):
 
         body = ses.build_email_body(email, cities)
         print("Email body for %s:\n%s", email, body)
-        # ses.send_email_to_subscriber(email, body)
+        ses.send_email_to_subscriber(email, body)
 
     return {
         "statusCode": 200,

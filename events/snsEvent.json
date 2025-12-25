@@ -1,0 +1,27 @@
+{
+  "Records": [
+    {
+      "EventSource": "aws:sns",
+      "EventVersion": "1.0",
+      "EventSubscriptionArn": "arn:aws:sns:us-east-1:109070224006:wetter-bericht-inbound-email:local-test",
+      "Sns": {
+        "Type": "Notification",
+        "MessageId": "dc93d619-d658-53b3-b16d-b7dee49400e4",
+        "TopicArn": "arn:aws:sns:us-east-1:109070224006:wetter-bericht-inbound-email",
+        "Subject": "Amazon SES Email Receipt Notification",
+        "Message": "{\"notificationType\":\"Received\",\"mail\":{\"timestamp\":\"Thu, 25 Dec 2025 07:39:26 -0500\",\"messageId\":\"u0iok1lf52lqi5ioamudk0t9u08rcr12i9csnt81\",\"source\":\"Brandon Lee <brandon@geistdevelopment.com>\",\"destination\":[\"weather@inbound.geistdevelopment.com\"],\"commonHeaders\":{\"from\":[\"Brandon Lee <brandon@geistdevelopment.com>\"],\"to\":[\"weather@inbound.geistdevelopment.com\"],\"subject\":\"new\"}},\"receipt\":{\"recipients\":[\"weather@inbound.geistdevelopment.com\"],\"action\":{\"type\":\"SNS\",\"payloadType\":\"CONTENT\"}},\"content\":\"From: Brandon Lee <brandon@geistdevelopment.com>\\r\\nTo: weather@inbound.geistdevelopment.com\\r\\nSubject: new\\r\\nMIME-Version: 1.0\\r\\nContent-Type: text/plain; charset=\\\"UTF-8\\\"\\r\\n\\r\\nADD Charlotte, NC\\r\\nLIST\\r\\nREMOVE Charlotte, NC\\r\\n\"}",
+        "Timestamp": "2025-12-25T12:39:40.088Z",
+        "SignatureVersion": "1",
+        "Signature": "LOCAL_SIGNATURE",
+        "SigningCertUrl": "https://sns.us-east-1.amazonaws.com/SimpleNotificationService.pem",
+        "UnsubscribeUrl": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe",
+        "MessageAttributes": {
+          "Publisher": {
+            "Type": "String",
+            "Value": "Amazon SES MailManager"
+          }
+        }
+      }
+    }
+  ]
+}

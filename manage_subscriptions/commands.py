@@ -1,0 +1,65 @@
+import dynamo
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def parse_commands(body):
+    commands = []
+
+    for line in body.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+
+        parts = line.split(" ", 1)
+        command = parts[0].upper()
+
+        payload = parts[1].strip() if len(parts) > 1 else ""
+
+        if command in {"ADD", "REMOVE", "LIST"}:
+            commands.append((command, payload))
+
+    return commands
+
+
+def execute_commands(sender_email: str, commands: list[tuple[str, str]]):
+    """
+    Executes parsed commands for a sender.
+    Ensures user exists before executing commands.
+    Returns structured results for response email.
+    """
+
+    results = {"added": [], "removed": [], "listed": None, "errors": []}
+
+    # Ensure user exists
+    user_created = dynamo.get_or_create_user(sender_email)
+
+    if user_created:
+        logger.info(f"Created new subscriber profile for {sender_email}")
+    else:
+        logger.info(f"Subscriber profile exists for {sender_email}")
+
+    # Execute commands
+    for command, payload in commands:
+        logger.info(f"RES: {results}")
+        try:
+            if command == "ADD":
+                dynamo.add_city(sender_email, payload)
+                results["added"].append(payload)
+
+            elif command == "REMOVE":
+                dynamo.remove_city(sender_email, payload)
+                results["removed"].append(payload)
+
+            elif command == "LIST":
+                cities = dynamo.list_cities(sender_email)
+                results["listed"] = cities
+
+        except Exception as e:
+            logger.exception("Failed executing command")
+            results["errors"].append(
+                {"command": command, "payload": payload, "error": str(e)}
+            )
+
+    return results

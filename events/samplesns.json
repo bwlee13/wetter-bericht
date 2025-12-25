@@ -1,0 +1,109 @@
+{
+  "Records": [
+    {
+      "EventSource": "aws:sns",
+      "EventVersion": "1.0",
+      "EventSubscriptionArn": "arn:aws:sns:us-east-1:109070224006:wetter-bericht-inbound-email:09b81154-afca-462c-be08-d3e0b633eb57",
+      "Sns": {
+        "Type": "Notification",
+        "MessageId": "dc93d619-d658-53b3-b16d-b7dee49400e4",
+        "TopicArn": "arn:aws:sns:us-east-1:109070224006:wetter-bericht-inbound-email",
+        "Subject": "Amazon SES Email Receipt Notification",
+        "Timestamp": "2025-12-25T12:39:40.088Z",
+        "MessageAttributes": {
+          "Publisher": {
+            "Type": "String",
+            "Value": "Amazon SES MailManager"
+          }
+        },
+        "Message": {
+          "notificationType": "Received",
+          "mail": {
+            "timestamp": "Thu, 25 Dec 2025 07:39:26 -0500",
+            "messageId": "u0iok1lf52lqi5ioamudk0t9u08rcr12i9csnt81",
+            "source": "Brandon Lee <brandon@geistdevelopment.com>",
+            "destination": [
+              "weather@inbound.geistdevelopment.com"
+            ],
+            "headersTruncated": false,
+            "commonHeadersTruncated": false,
+            "headers": [
+              {
+                "name": "Received-SPF",
+                "value": "pass (spfCheck: domain of geistdevelopment.com designates 209.85.208.175 as permitted sender)"
+              },
+              {
+                "name": "Authentication-Results",
+                "value": "amazonses.com; spf=pass; dkim=pass; dmarc=none"
+              },
+              {
+                "name": "Return-Path",
+                "value": "<brandon@geistdevelopment.com>"
+              },
+              {
+                "name": "DKIM-Signature",
+                "value": "v=1; a=rsa-sha256; d=geistdevelopment.com; s=google"
+              },
+              {
+                "name": "From",
+                "value": "Brandon Lee <brandon@geistdevelopment.com>"
+              },
+              {
+                "name": "To",
+                "value": "weather@inbound.geistdevelopment.com"
+              },
+              {
+                "name": "Subject",
+                "value": "new"
+              },
+              {
+                "name": "Content-Type",
+                "value": "multipart/alternative; boundary=\"000000000000de9aa70646c611d6\""
+              }
+            ],
+            "commonHeaders": {
+              "from": [
+                "Brandon Lee <brandon@geistdevelopment.com>"
+              ],
+              "to": [
+                "weather@inbound.geistdevelopment.com"
+              ],
+              "subject": "new",
+              "messageId": "u0iok1lf52lqi5ioamudk0t9u08rcr12i9csnt81",
+              "date": "Thu, 25 Dec 2025 07:39:26 -0500"
+            }
+          },
+          "receipt": {
+            "timestamp": "2025-12-25T12:39:39.406Z",
+            "processingTimeMillis": 0,
+            "recipients": [
+              "weather@inbound.geistdevelopment.com"
+            ],
+            "action": {
+              "type": "SNS",
+              "topicArn": "arn:aws:sns:us-east-1:109070224006:wetter-bericht-inbound-email",
+              "payloadType": "CONTENT",
+              "encoding": "UTF-8"
+            },
+            "spamVerdict": {
+              "status": "PASS"
+            },
+            "virusVerdict": {
+              "status": "PASS"
+            },
+            "spfVerdict": {
+              "status": "PASS"
+            },
+            "dkimVerdict": {
+              "status": "PASS"
+            },
+            "dmarcVerdict": {
+              "status": "PASS"
+            }
+          },
+          "content": "From: Brandon Lee <brandon@geistdevelopment.com>\r\nTo: weather@inbound.geistdevelopment.com\r\nSubject: new\r\nMIME-Version: 1.0\r\nContent-Type: multipart/alternative; boundary=\"000000000000de9aa70646c611d6\"\r\n\r\n--000000000000de9aa70646c611d6\r\nContent-Type: text/plain; charset=\"UTF-8\"\r\n\r\nADD Charlotte, NC\r\nLIST\r\nREMOVE Charlotte, NC\r\n\r\n--000000000000de9aa70646c611d6\r\nContent-Type: text/html; charset=\"UTF-8\"\r\n\r\n<div>ADD Charlotte, NC</div><div>LIST</div><div>REMOVE Charlotte, NC</div>\r\n\r\n--000000000000de9aa70646c611d6--"
+        }
+      }
+    }
+  ]
+}

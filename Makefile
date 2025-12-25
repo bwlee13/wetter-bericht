@@ -22,7 +22,7 @@ runSend: build
 	sam local invoke $(SEND_LAMBDA)
 
 runManage: build
-	sam local invoke $(MANAGE_LAMBDA)
+	sam local invoke $(MANAGE_LAMBDA) --event events/snsEvent.json
 
 #################################
 # Deploy

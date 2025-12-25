@@ -88,13 +88,20 @@ Resources:
             TableName: !Ref DynamoTableName
         - SESCrudPolicy:
             IdentityName: "*"
+        - Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+            Resource:
+              - arn:aws:s3:::wetter-bericht/*
   # EventBridge Schedule
   DailyForecastSchedule:
     Type: AWS::Events::Rule
     Properties:
       Name: !Sub "${StackName}-daily-forecast"
       Description: "Trigger daily weather forecast @ 4 AM EST"
-      ScheduleExpression: cron(0 9 * * ? *) # 9 AM UTC / 4 AM EST
+      # ScheduleExpression: cron(0 9 * * ? *) # 9 AM UTC / 4 AM EST
+      ScheduleExpression: cron(0 * * * ? *) # 9 AM UTC / 4 AM EST
       State: ENABLED
       Targets:
         - Arn: !GetAtt SendForecastFunction.Arn
