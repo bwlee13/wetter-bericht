@@ -17,7 +17,7 @@ def build_email_body(email: str, cities: list[dict]) -> str:
         "Good morning!",
         f"Today is {today_str}",
         "",
-        "Here is your daily forecast:",
+        "🌤 Here is your daily detailed forecast:",
         "",
     ]
 
@@ -25,9 +25,7 @@ def build_email_body(email: str, cities: list[dict]) -> str:
         lines.append("- (No locations configured)")
     else:
         for city in cities:
-            lines.append(
-                f"- {city.get('city')}, {city.get('state')} ({city.get('country')})"
-            )
+            lines.append(f"- {city.get('city')}, {city.get('state')}")
             try:
                 forecast = weather.fetch_weather(city["lat"], city["lon"])
                 for idx, day in enumerate(forecast):
@@ -49,12 +47,7 @@ def build_email_body(email: str, cities: list[dict]) -> str:
 
             lines.append("")
 
-    lines.extend(
-        [
-            "",
-            "— Wetter Bericht",
-        ]
-    )
+    lines.extend(["", "— Wetter Bericht ☀️"])
 
     return "\n".join(lines)
 

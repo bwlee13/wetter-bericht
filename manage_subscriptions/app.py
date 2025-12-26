@@ -19,34 +19,17 @@ def lambda_handler(event, context):
 
     # Extract Email Content
     email_content = ses.parse_ses_event(ses_event)
-
-    sender_email = email_content["sender_email"]
-    subject = email_content["subject"]
-    body = email_content["body"]
-
-    logger.info(
-        "================ EMAIL RECEIVED ================\n"
-        f"Sender : {sender_email}\n"
-        f"Subject: {subject}\n"
-        "------------------------------------------------\n"
-        f"{body}\n"
-        "================================================"
-    )
+    if email_content.statusCode != 200:
+        logger.error("Failed to parse SES event")
+        return {"statusCode": email_content.statusCode}
 
     # Parse commands
-    cmds = commands.parse_commands(body)
+    cmds = commands.parse_commands(email_content.body)
     logger.info(f"Parsed commands: {cmds}")
 
-    results = commands.execute_commands(sender_email, cmds)
-    logger.info(f"Command execution results: {results}")
+    results = commands.execute_commands(email_content.sender_email, cmds)
 
-    # # Execute commands
-    # for command, payload in cmds:
-    #     if command == "ADD":
-    #         dynamo.add_city(sender_email, payload)
-    #     elif command == "REMOVE":
-    #         dynamo.remove_city(sender_email, payload)
-    #     elif command == "LIST":
-    #         dynamo.list_cities(sender_email)
+    # Send response email
+    ses.send_resp_email(results, email_content.sender_email)
 
     return {"statusCode": 200}

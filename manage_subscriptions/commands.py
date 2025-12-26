@@ -1,5 +1,6 @@
 import dynamo
 import logging
+import geocode
 
 logger = logging.getLogger(__name__)
 
@@ -42,15 +43,17 @@ def execute_commands(sender_email: str, commands: list[tuple[str, str]]):
 
     # Execute commands
     for command, payload in commands:
-        logger.info(f"RES: {results}")
         try:
             if command == "ADD":
-                dynamo.add_city(sender_email, payload)
-                results["added"].append(payload)
+                lat, lon = geocode.resolve_city(payload)
+                city, state = dynamo.add_city(sender_email, payload, lat, lon)
+                if city and state:
+                    results["added"].append({"city": city, "state": state})
 
             elif command == "REMOVE":
-                dynamo.remove_city(sender_email, payload)
-                results["removed"].append(payload)
+                city, state = dynamo.remove_city(sender_email, payload)
+                if city and state:
+                    results["removed"].append({"city": city, "state": state})
 
             elif command == "LIST":
                 cities = dynamo.list_cities(sender_email)

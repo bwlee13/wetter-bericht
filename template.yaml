@@ -65,7 +65,7 @@ Resources:
     Properties:
       CodeUri: send_forecast/
       Handler: app.lambda_handler
-      Description: 'Send daily weather forecast to subscribed users'
+      Description: 'Wetter Bericht - Send daily weather forecast to subscribed users'
       Policies: 
         - DynamoDBReadPolicy:
             TableName: !Ref DynamoTableName
@@ -82,7 +82,7 @@ Resources:
     Properties:
       CodeUri: manage_subscriptions/
       Handler: app.lambda_handler
-      Description: 'Handles ADD/REMOVE/LIST email commands'
+      Description: 'Wetter Bericht - Handles inbound email commands'
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref DynamoTableName

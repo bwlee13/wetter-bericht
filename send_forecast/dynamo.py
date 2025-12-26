@@ -3,10 +3,7 @@ import boto3
 import os
 from boto3.dynamodb.types import TypeDeserializer
 
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
+logger = logging.getLogger(__name__)
 
 dynamodb = boto3.client("dynamodb")
 TABLE_NAME = os.environ["DYNAMO_TABLE_NAME"]
@@ -18,10 +15,10 @@ def deserialize_item(item):
 
 
 def get_all_subscribers():
-    response = dynamodb.scan(
+    response = dynamodb.query(
         TableName=TABLE_NAME,
-        FilterExpression="SK = :sk",
-        ExpressionAttributeValues={":sk": {"S": "PROFILE"}},
+        KeyConditionExpression="PK = :pk",
+        ExpressionAttributeValues={":pk": {"S": "PROFILE"}},
     )
     items = response.get("Items", [])
     return [deserialize_item(item)["email"] for item in items]
@@ -32,8 +29,8 @@ def get_cities_for_subscriber(email: str):
         TableName=TABLE_NAME,
         KeyConditionExpression="PK = :pk AND begins_with(SK, :sk)",
         ExpressionAttributeValues={
-            ":pk": {"S": f"SUBSCRIBER#{email}"},
-            ":sk": {"S": "CITY#"},
+            ":pk": {"S": f"SUBSCRIPTION#{email}"},
+            ":sk": {"S": "SUB#"},
         },
     )
     items = response.get("Items", [])

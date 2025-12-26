@@ -14,7 +14,7 @@ codeuri = "/Users/bwl/Documents/Dev/wetter-bericht/manage_subscriptions"
 runtime = "python3.14"
 architecture = "arm64"
 handler = "app.lambda_handler"
-manifest_hash = "d41d8cd98f00b204e9800998ecf8427e"
+manifest_hash = "47d75532dc408da8e27b6490f244b061"
 packagetype = "Zip"
 functions = ["ManageSubscriptionsFunction"]
 
