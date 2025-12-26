@@ -170,6 +170,10 @@ def send_resp_email(results: dict, to_email: str):
 
     # FOOTER
     lines.append(
+        "DO NOT REPLY TO THIS EMAIL. Only send commands to weather@inbound.geistdevelopment.com"
+    )
+    lines.append("")
+    lines.append(
         "To manage your subscriptions, send an email to weather@inbound.geistdevelopment.com with commands in the body like:"
     )
     lines.append("ADD Charlotte, NC")
