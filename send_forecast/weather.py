@@ -183,7 +183,8 @@ def build_forecast_payload(cities: list[dict]):
             )
         except Exception as e:
             logger.exception(
-                f"Failed to normalize weather for {city.get('city')}, {city.get('state')}"
+                f"Failed to normalize weather for {city.get('city')}, {city.get('state')}",
+                f"Err: {e}",
             )
             payload.append(
                 {
