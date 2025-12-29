@@ -1,0 +1,22 @@
+{
+  "Records": [
+    {
+      "EventSource": "aws:sns",
+      "EventVersion": "1.0",
+      "EventSubscriptionArn": "arn:aws:sns:us-east-1:109070224006:WetterBerichtWeatherFanout:example-subscription",
+      "Sns": {
+        "Type": "Notification",
+        "MessageId": "11111111-2222-3333-4444-555555555555",
+        "TopicArn": "arn:aws:sns:us-east-1:109070224006:WetterBerichtWeatherFanout",
+        "Subject": "Weather Fanout",
+        "Message": "{\"email\":\"brandon@geistdevelopment.com\",\"runDate\":\"2025-12-29\"}",
+        "Timestamp": "2025-12-29T13:55:39.000Z",
+        "SignatureVersion": "1",
+        "Signature": "LOCAL_SIGNATURE",
+        "SigningCertUrl": "https://sns.us-east-1.amazonaws.com/SimpleNotificationService.pem",
+        "UnsubscribeUrl": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe",
+        "MessageAttributes": {}
+      }
+    }
+  ]
+}

@@ -1,6 +1,5 @@
 import logging
 import boto3
-import weather
 import constants
 from datetime import datetime
 
@@ -11,7 +10,7 @@ logger.setLevel(logging.INFO)
 ses = boto3.client("ses")
 
 
-def build_email_body(email: str, cities: list[dict]) -> str:
+def build_email_body(forecast_payload: list[dict]) -> str:
     today_str = datetime.now().strftime("%A, %B %d, %Y")
     lines = [
         "Good morning!",
@@ -21,41 +20,54 @@ def build_email_body(email: str, cities: list[dict]) -> str:
         "",
     ]
 
-    if not cities:
+    if not forecast_payload:
         lines.append("- (No locations configured)")
     else:
-        for city in cities:
+        for city in forecast_payload:
             lines.append(f"- {city.get('city')}, {city.get('state')}")
             try:
-                forecast = weather.fetch_weather(city["lat"], city["lon"])
-                for idx, day in enumerate(forecast):
-                    label = weather.format_day_label(day["date"], idx)
-                    description = constants.WEATHER_CODE_MAP.get(
-                        day["code"], "Unknown Weather Code"
-                    )
+                forecast = city.get("forecast", [])
+                for day in forecast:
                     lines.append(
-                        f"  {label} {day['high']}°F / {day['low']}°F ({description})"
+                        f"  {day['label']} {day['high']}°F / {day['low']}°F ({day['description']})"
                     )
             except Exception as e:
                 logger.exception(
-                    "Err: f{e}",
-                    "Failed to fetch weather for %s, %s",
-                    city.get("city"),
-                    city.get("state"),
+                    f"Failed to fetch weather for {city.get('city')}, {city.get('state')}",
+                    f"Err: {e}",
                 )
                 lines.append("  (Weather unavailable)")
 
             lines.append("")
 
-    lines.extend(["", "— Wetter Bericht ☀️"])
+    # FOOTER
+    footer = [
+        "------------------------------",
+        "Manage your subscriptions",
+        "------------------------------",
+        "",
+        "Send an email to:",
+        "weather@inbound.geistdevelopment.com",
+        "",
+        "One command per line in the body:",
+        "ADD Charlotte, NC",
+        "REMOVE Raleigh, NC",
+        "LIST",
+        "",
+        "------------------------------",
+        "",
+        "— Wetter Bericht ☀️",
+        "",
+        "This is an automated email. Do not reply.",
+    ]
+    lines.extend(footer)
 
     return "\n".join(lines)
 
 
 def send_email_to_subscriber(email: str, body: str):
     sender = constants.SENDER_EMAIL
-
-    logger.info("Sending forecast email to %s", email)
+    logger.info(f"Sending forecast email to {email}")
 
     ses.send_email(
         Source=sender,

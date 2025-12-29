@@ -18,4 +18,13 @@ manifest_hash = "47d75532dc408da8e27b6490f244b061"
 packagetype = "Zip"
 functions = ["ManageSubscriptionsFunction"]
 
+[function_build_definitions.95979269-a2e3-49ff-a8bb-32d3ac9fb213]
+codeuri = "/Users/bwl/Documents/Dev/wetter-bericht/weather_dispatcher"
+runtime = "python3.14"
+architecture = "arm64"
+handler = "app.lambda_handler"
+manifest_hash = "6686853da3491a56c98917cc5c4ddea2"
+packagetype = "Zip"
+functions = ["WeatherDispatcherFunction"]
+
 [layer_build_definitions]

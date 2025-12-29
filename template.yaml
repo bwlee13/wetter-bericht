@@ -24,8 +24,8 @@ Parameters:
 Globals:
   Function:
     Runtime: python3.14
-    Timeout: 5
-    MemorySize: 128
+    Timeout: 60
+    MemorySize: 512
     Architectures:
       - arm64
     LoggingConfig:
@@ -34,6 +34,7 @@ Globals:
       Variables:
         STACK_NAME: !Ref StackName
         DYNAMO_TABLE_NAME: !Ref DynamoTableName
+        WEATHER_FANOUT_TOPIC: !Ref WeatherFanoutTopic
 
 #####################################
 # Resources
@@ -59,6 +60,29 @@ Resources:
           KeyType: HASH
         - AttributeName: SK
           KeyType: RANGE
+
+  # SNS Topic - Fanout for weather updates
+  WeatherFanoutTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub "${StackName}-weather-fanout"
+  
+  # Lambda Function - Weather Dispatcher
+  WeatherDispatcherFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: weather_dispatcher/
+      Handler: app.lambda_handler
+      Description: 'Wetter Bericht - Dispatcher: fans out daily jobs per subscriber'
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref DynamoTableName
+        - Statement:
+            - Effect: Allow
+              Action:
+                - sns:Publish
+              Resource: !Ref WeatherFanoutTopic
+
   # Lambda Function - Send Weather Forecast
   SendForecastFunction:
     Type: AWS::Serverless::Function 
@@ -66,6 +90,11 @@ Resources:
       CodeUri: send_forecast/
       Handler: app.lambda_handler
       Description: 'Wetter Bericht - Send daily weather forecast to subscribed users'
+      Events:
+        WeatherFanout:
+          Type: SNS
+          Properties:
+            Topic: !Ref WeatherFanoutTopic
       Policies: 
         - DynamoDBReadPolicy:
             TableName: !Ref DynamoTableName
@@ -76,6 +105,7 @@ Resources:
                   - ses:SendRawEmail
                 Resource:
                   - "*"
+
   # Lambda Function - Manage Subscriptions
   ManageSubscriptionsFunction:
     Type: AWS::Serverless::Function
@@ -97,6 +127,7 @@ Resources:
             Resource:
               - arn:aws:s3:::wetter-bericht/*
               - "*"
+
   # EventBridge Schedule
   DailyForecastSchedule:
     Type: AWS::Events::Rule
@@ -106,17 +137,33 @@ Resources:
       ScheduleExpression: cron(0 10 * * ? *) # 10 AM UTC / 5 AM EST
       State: ENABLED
       Targets:
-        - Arn: !GetAtt SendForecastFunction.Arn
-          Id: SendDailyForecastTarget
+        - Arn: !GetAtt WeatherDispatcherFunction.Arn
+          Id: WeatherDispatcherTarget
 
   # Permissions
-  PermissionForEventBridgeToInvokeLambda:
+  WeatherWorkerSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref WeatherFanoutTopic
+      Protocol: lambda
+      Endpoint: !GetAtt SendForecastFunction.Arn
+
+  PermissionForSNSToInvokeSendForecast:
     Type: AWS::Lambda::Permission
     Properties:
       FunctionName: !Ref SendForecastFunction
       Action: lambda:InvokeFunction
+      Principal: sns.amazonaws.com
+      SourceArn: !Ref WeatherFanoutTopic
+
+  PermissionForEventBridgeToInvokeDispatcher:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref WeatherDispatcherFunction
+      Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceArn: !GetAtt DailyForecastSchedule.Arn
+
 
 #####################################
 # Outputs
@@ -129,3 +176,11 @@ Outputs:
   SendForecastFunction:
     Description: Send Forecast Lambda Function ARN
     Value: !GetAtt SendForecastFunction.Arn
+  
+  WeatherDispatcherFunction:
+    Description: Weather Dispatcher Lambda Function ARN
+    Value: !GetAtt WeatherDispatcherFunction.Arn
+    
+  WeatherFanoutTopic:
+    Description: SNS topic used to fan out weather jobs
+    Value: !Ref WeatherFanoutTopic

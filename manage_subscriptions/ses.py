@@ -169,18 +169,25 @@ def send_resp_email(results: dict, to_email: str):
         return
 
     # FOOTER
-    lines.append(
-        "DO NOT REPLY TO THIS EMAIL. Only send commands to weather@inbound.geistdevelopment.com"
-    )
-    lines.append("")
-    lines.append(
-        "To manage your subscriptions, send an email to weather@inbound.geistdevelopment.com with commands in the body like:"
-    )
-    lines.append("ADD Charlotte, NC")
-    lines.append("REMOVE Raleigh, NC")
-    lines.append("LIST")
-    lines.append("")
-    lines.append("— Wetter Bericht ☀️")
+    footer = [
+        "----------------------------",
+        "Manage your subscriptions",
+        "----------------------------",
+        "",
+        "Send an email to:",
+        "weather@inbound.geistdevelopment.com",
+        "",
+        "One command per line in the body:",
+        "ADD Charlotte, NC",
+        "REMOVE Raleigh, NC",
+        "LIST",
+        "",
+        "----------------------------",
+        "",
+        "— Wetter Bericht ☀️",
+        "This is an automated email. Do not reply.",
+    ]
+    lines.extend(footer)
 
     body = "\n".join(lines)
 

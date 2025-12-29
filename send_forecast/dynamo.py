@@ -14,16 +14,6 @@ def deserialize_item(item):
     return {k: deserializer.deserialize(v) for k, v in item.items()}
 
 
-def get_all_subscribers():
-    response = dynamodb.query(
-        TableName=TABLE_NAME,
-        KeyConditionExpression="PK = :pk",
-        ExpressionAttributeValues={":pk": {"S": "PROFILE"}},
-    )
-    items = response.get("Items", [])
-    return [deserialize_item(item)["email"] for item in items]
-
-
 def get_cities_for_subscriber(email: str):
     response = dynamodb.query(
         TableName=TABLE_NAME,

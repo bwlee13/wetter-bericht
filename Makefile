@@ -6,6 +6,7 @@ STACK_NAME = wetter-bericht
 
 SEND_LAMBDA = SendForecastFunction
 MANAGE_LAMBDA = ManageSubscriptionsFunction
+DISPATCH_LAMBDA = WeatherDispatcherFunction
 
 validate:
 	sam validate
@@ -19,10 +20,13 @@ build:
 #################################
 
 runSend: build
-	sam local invoke $(SEND_LAMBDA)
+	sam local invoke $(SEND_LAMBDA) --event events/snsDispatchEvent.json
 
 runManage: build
 	sam local invoke $(MANAGE_LAMBDA) --event events/snsEvent.json
+
+runDispatch: build
+	sam local invoke $(DISPATCH_LAMBDA) 
 
 #################################
 # Deploy
