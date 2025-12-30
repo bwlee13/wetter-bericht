@@ -190,7 +190,7 @@ def build_forecast_payload(cities: list[dict]):
                 {
                     "city": city.get("city"),
                     "state": city.get("state"),
-                    "forecast": None,
+                    "forecast": [],
                 }
             )
 

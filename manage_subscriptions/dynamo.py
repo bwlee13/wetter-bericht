@@ -43,6 +43,7 @@ def create_user(email: str):
             "SK": {"S": f"PROFILE#{email}"},
             "email": {"S": email},
             "createdAt": {"S": datetime.now().isoformat()},
+            "isActive": {"BOOL": True},
         },
         ConditionExpression="attribute_not_exists(PK)",
     )
@@ -84,7 +85,7 @@ def remove_city(email, payload):
         TableName=DYNAMO_TABLE,
         Key={
             "PK": {"S": f"SUBSCRIPTION#{email}"},
-            "SK": {"S": f"SUB#CITY#US#{state.upper()}#{city.upper()}"},
+            "SK": {"S": f"SUB#US#{state.upper()}#{city.upper()}"},
         },
     )
 
@@ -112,5 +113,4 @@ def list_cities(email):
             }
         )
 
-    print(f"Current subscriptions for {email}: {city_list}")
     return city_list

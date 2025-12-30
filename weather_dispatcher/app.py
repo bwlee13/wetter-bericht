@@ -54,7 +54,7 @@ def lambda_handler(event, context):
     logger.info("WeatherDispatcherFunction invoked")
 
     subscribers = get_all_subscribers()
-    logger.info("Found %d subscribers", len(subscribers))
+    logger.info(f"Found {len(subscribers)} subscribers")
     print("SUBSCRIBERS: ", subscribers)
 
     published = 0
@@ -67,18 +67,21 @@ def lambda_handler(event, context):
             }
             print("MESSAGE: ", message)
 
-            # sns.publish(
-            #     TopicArn=SNS_TOPIC_ARN,
-            #     Message=json.dumps(message),
-            # )
+            sns.publish(
+                TopicArn=SNS_TOPIC_ARN,
+                Message=json.dumps(message),
+            )
 
             published += 1
-            print("PUBLISHED COUNT: ", published)
 
-            logger.info("Dispatched %d jobs to SNS", published)
         except Exception:
             logger.exception("Failed to dispatch weather job for %s", email)
 
+    logger.info(
+        f"Dispatched Count: {published}.\n",
+        f"Subscriber count: {len(subscribers)}.\n",
+        f"Subscribers: {subscribers}.",
+    )
     return {
         "statusCode": 200,
         "body": json.dumps({"subscribers": published, "status": "dispatched"}),

@@ -24,8 +24,8 @@ Parameters:
 Globals:
   Function:
     Runtime: python3.14
-    Timeout: 60
-    MemorySize: 512
+    Timeout: 30
+    MemorySize: 128
     Architectures:
       - arm64
     LoggingConfig:

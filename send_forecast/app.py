@@ -17,15 +17,18 @@ def lambda_handler(event, context):
         logger.info(f"SNS Message: {sns_message}")
 
     except (KeyError, IndexError, json.JSONDecodeError) as e:
-        logger.error("Invalid SNS event format: %s", e)
-        return {"statusCode": 400}
+        logger.error(f"Invalid SNS event format: {e}")
+        return {"statusCode": 400, "body": f"SNS ERROR: {e}"}
 
     email = sns_message.get("email")
     run_dt = sns_message.get("runDate")
 
     if not email:
         logger.error("SNS message missing 'email' field")
-        return {"statusCode": 400}
+        return {
+            "statusCode": 400,
+            "body": f"SNS ERROR: Missing email - got email={email}",
+        }
 
     logger.info(f"Processing forecast for {email} | runDate={run_dt}")
 

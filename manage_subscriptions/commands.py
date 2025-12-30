@@ -33,6 +33,10 @@ def execute_commands(sender_email: str, commands: list[tuple[str, str]]):
 
     results = {"added": [], "removed": [], "listed": None, "errors": []}
 
+    if not commands:
+        results["errors"].append({"error": "No valid commands found"})
+        return results
+
     # Ensure user exists
     user_created = dynamo.get_or_create_user(sender_email)
 

@@ -22,6 +22,7 @@ def build_email_body(forecast_payload: list[dict]) -> str:
 
     if not forecast_payload:
         lines.append("- (No locations configured)")
+        lines.append("")
     else:
         for city in forecast_payload:
             lines.append(f"- {city.get('city')}, {city.get('state')}")
@@ -75,7 +76,7 @@ def send_email_to_subscriber(email: str, body: str):
         Message={
             "Subject": {
                 "Charset": "UTF-8",
-                "Data": "Wetter Bericht – Daily Forecast",
+                "Data": "Wetter Bericht - Daily Forecast",
             },
             "Body": {
                 "Text": {
