@@ -78,9 +78,9 @@ def lambda_handler(event, context):
             logger.exception("Failed to dispatch weather job for %s", email)
 
     logger.info(
-        f"Dispatched Count: {published}.\n",
-        f"Subscriber count: {len(subscribers)}.\n",
-        f"Subscribers: {subscribers}.",
+        f"Dispatched Count: {published}\n"
+        f"Subscriber count: {len(subscribers)}\n"
+        f"Subscribers: {subscribers}"
     )
     return {
         "statusCode": 200,
